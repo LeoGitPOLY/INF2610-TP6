@@ -1,13 +1,12 @@
 #include "./libs/lib.h"
+unsigned long TAILLE_PAGE = 1024;
 
 unsigned int calculerNumeroDePage(unsigned long adresse) {
-	// TODO
-    return 0;
+    return adresse / TAILLE_PAGE;
 }
 
 unsigned long calculerDeplacementDansLaPage(unsigned long adresse) {
-	// TODO
-     return 0;
+     return adresse % TAILLE_PAGE;
 }
 
 unsigned long calculerAdresseComplete(unsigned int numeroDePage, unsigned long deplacementDansLaPage) {
