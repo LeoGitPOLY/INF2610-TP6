@@ -10,8 +10,7 @@ unsigned long calculerDeplacementDansLaPage(unsigned long adresse) {
 }
 
 unsigned long calculerAdresseComplete(unsigned int numeroDePage, unsigned long deplacementDansLaPage) {
-	// TODO
-     return 0;
+     return (numeroDePage*TAILLE_PAGE) + deplacementDansLaPage;
 }
 
 void rechercherTLB(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
