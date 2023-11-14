@@ -18,15 +18,58 @@ void rechercherTLB(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
 }
 
 void rechercherTableDesPages(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
-	// TODO
+	unsigned int numeroDePage = calculerNumeroDePage(req->adresseVirtuelle);
+	unsigned long offsetAdresse = calculerDeplacementDansLaPage(req->adresseVirtuelle);
+	if(mem->tp->entreeValide[numeroDePage]){
+		int numeroDeCadre = mem->tp->numeroCadre[numeroDePage];
+		req->adressePhysique = calculerAdresseComplete(numeroDeCadre, offsetAdresse);
+	}
+	else{
+		req->adressePhysique = 0;
+	}
 }
 
 void ajouterDansMemoire(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
-	//TODO
+	int page = calculerNumeroDePage(req->adresseVirtuelle);
+
+    // Trouver le premier cadre disponible
+    int premierCadreDisponible = 0;
+	 for (int i = 0; i < TAILLE_MEMOIRE; i++) {
+        if (!mem->memoire->utilisee[i]) {
+            premierCadreDisponible = i;
+        }
+    }
+
+    // Ajouter la page dans la mémoire
+    mem->memoire->utilisee[premierCadreDisponible] = 1;
+    mem->memoire->numeroPage[premierCadreDisponible] = page;
+    mem->memoire->dateCreation[premierCadreDisponible] = req->date;
+    mem->memoire->dernierAcces[premierCadreDisponible] = req->date;
+
+    // Mise à jour de la table des pages
+    mem->tp->entreeValide[page] = 1;
+    mem->tp->numeroCadre[page] = premierCadreDisponible;
 }
 
+
 void mettreAJourTLB(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
-	// TODO
+	//Trouver l'indice plus ancien
+    int indiceRemplacement = 0;
+	unsigned long plusAncienneDate = mem->tlb->dateCreation[0];
+
+    for (int i = 1; i < TAILLE_TLB; i++) {
+        if (mem->tlb->dateCreation[i] < plusAncienneDate) {
+            plusAncienneDate = mem->tlb->dateCreation[i];
+            indiceRemplacement = i;
+        }
+    }
+
+    // Remplacer les informations dans l'entrée du TLB
+    mem->tlb->numeroPage[indiceRemplacement] = calculerNumeroDePage(req->adresseVirtuelle);
+    mem->tlb->numeroCadre[indiceRemplacement] = mem->tp->numeroCadre[calculerNumeroDePage(req->adresseVirtuelle)];
+    mem->tlb->entreeValide[indiceRemplacement] = 1;
+    mem->tlb->dernierAcces[indiceRemplacement] = req->date;
+    mem->tlb->dateCreation[indiceRemplacement] = req->date;
 }
 
 // NE PAS MODIFIER
