@@ -1,3 +1,11 @@
+/*
+ * GestionMemoire.c
+ *
+ * Ecole polytechnique de Montreal, GIGL, Automne  2023
+ * Aurelie Nichols - 2142404
+ * Leonard Pouliot - 2150965
+ */
+
 #include "./libs/lib.h"
 #include <stdio.h>
 #include <time.h>
