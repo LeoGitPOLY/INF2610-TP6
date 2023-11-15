@@ -1,5 +1,6 @@
 #include "./libs/lib.h"
 #include <stdio.h>
+#include <time.h>
 
 unsigned long TAILLE_PAGE = 1024;
 
@@ -29,6 +30,8 @@ void rechercherTLB(struct RequeteMemoire *req, struct SystemeMemoire *mem)
 			unsigned int numCadre = mem->tlb->numeroCadre[i];
 			req->adressePhysique = calculerAdresseComplete(numCadre, depPage);
 			req->estDansTLB = 1;
+			
+			time(&req->date);
 			mem->tlb->dernierAcces[i] = req->date;
 
 			return;
@@ -41,12 +44,17 @@ void rechercherTLB(struct RequeteMemoire *req, struct SystemeMemoire *mem)
 void rechercherTableDesPages(struct RequeteMemoire* req, struct SystemeMemoire* mem) {
 	unsigned int numeroDePage = calculerNumeroDePage(req->adresseVirtuelle);
 	unsigned long offsetAdresse = calculerDeplacementDansLaPage(req->adresseVirtuelle);
-	if(mem->tp->entreeValide[numeroDePage]){
+
+	if (mem->tp->entreeValide[numeroDePage])
+	{
 		int numeroDeCadre = mem->tp->numeroCadre[numeroDePage];
 		req->adressePhysique = calculerAdresseComplete(numeroDeCadre, offsetAdresse);
+		req->estDansTablePages = 1;
 	}
-	else{
+	else
+	{
 		req->adressePhysique = 0;
+		req->estDansTablePages = 0;
 	}
 }
 
